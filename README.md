@@ -1,4 +1,4 @@
-# 🗂️ Vaultaris USB File Manager (Flask App)
+# 🗂️ Vaultaris Smart File Manager (Flask App)
 
 Vaultaris is a secure and responsive Flask web application that allows users to:
 - Detect, mount, browse, upload, download, preview, and delete files on removable USB drives
