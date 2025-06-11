@@ -143,9 +143,6 @@ http://localhost:5000
 ## ✨ Author
 
 **Rajesh Kumar Jogi**  
-MSc Artificial Intelligence, University of East London  
-GitHub: [@rajeshkumarp](https://github.com/rajeshkumarp)
-
 ---
 
 ## 🛡 License
