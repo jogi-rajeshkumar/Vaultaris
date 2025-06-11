@@ -47,7 +47,7 @@ vaultaris/
 
 | Username         | Password     | Role    |
 |------------------|--------------|---------|
-| Adminuser        | Adminonly    | admin   |
+| RajeshKumarJogi  | Rajesh2098@  | admin   |
 | ViewerUser       | viewonly     | viewer  |
 
 - `admin`: full access including delete
@@ -70,9 +70,6 @@ gunicorn==21.2.0
 ```bash
 sudo apt install ffmpeg util-linux
 ```
-
-- `ffmpeg` – for video metadata (`ffprobe`)
-- `util-linux` – for USB mount tools (`lsblk`, `mount`, `umount`)
 
 ---
 
@@ -104,9 +101,8 @@ The app will be available at:
 ```
 http://localhost:5000
 ```
+
 ---
-
-
 
 ## 🔄 Routes Overview
 
@@ -125,27 +121,31 @@ http://localhost:5000
 
 ---
 
-## 📦 Deployment with Gunicorn
+## 📸 UI Screenshots
 
-For production deployment (optional):
+**🔐 Login Page**  
+![Login](Screenshots/Screenshot%20From%202025-06-11%2022-20-40.png)
 
-```bash
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
-```
+**💾 Dashboard - Mounted Devices**  
+![Dashboard](Screenshots/Screenshot%20From%202025-06-11%2022-30-32.png)
 
----
+**🗂 Browse Folders**  
+![Browse](Screenshots/Screenshot%20From%202025-06-11%2022-34-46.png)
 
-## 👨‍💻 Developer Notes
+**📁 Folder Contents**  
+![Folder View](Screenshots/Screenshot%20From%202025-06-11%2022-34-55.png)
 
-- Logs are stored in: `logs/activity.log`
-- Trashed files are moved to `.trash/` in the same directory
-- Previews support: JPG, PNG, MP4, WebM, MKV, etc.
+**📤 Upload File Interface**  
+![Upload](Screenshots/Screenshot%20From%202025-06-11%2022-35-05.png)
 
 ---
 
 ## ✨ Author
 
 **Rajesh Kumar Jogi**  
+MSc Artificial Intelligence, University of East London  
+GitHub: [@rajeshkumarp](https://github.com/rajeshkumarp)
+
 ---
 
 ## 🛡 License
