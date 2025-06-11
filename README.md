@@ -47,7 +47,7 @@ vaultaris/
 
 | Username         | Password     | Role    |
 |------------------|--------------|---------|
-| RajeshKumarJogi  | Rajesh2098@  | admin   |
+| Adminuser        | Adminonly    | admin   |
 | ViewerUser       | viewonly     | viewer  |
 
 - `admin`: full access including delete
