@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      color: #0ff;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      word-break: break-word;
+    }
+
+    img, video {
+      max-width: 90%;
+      max-height: 70vh;
+      margin-top: 20px;
+      border: 2px solid #0ff;
+      border-radius: 10px;
+    }
+
+    .metadata {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #7ff;
+      text-align: left;
+      display: inline-block;
+      max-width: 90%;
+      background: rgba(0, 255, 255, 0.05);
+      padding: 15px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px;
+      word-break: break-word;
+    }
+
+    .metadata h4 {
+      margin: 0 0 10px;
+      text-align: center;
+      color: #0ff;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      color: #00fff7;
+      text-decoration: none;
+      font-weight: bold;
+      background: rgba(0, 255, 255, 0.1);
+      padding: 10px 20px;
+      border: 1px solid #00fff7;
+      border-radius: 10px;
+      transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(0, 255, 255, 0.3);
+    }
+
+    @media screen and (max-width: 480px) {
+      h2 {
+        font-size: 1.1rem;
+        padding: 0 10px;
+      }
+
+      .metadata {
+        font-size: 13px;
+        padding: 10px;
+      }
+
+      .back-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Preview: {{ path.split('/')[-1] }}</h2>
+
+  {% if media_type == 'image' %}
+    <img src="{{ url_for('serve_media') }}?path={{ path }}" alt="Image Preview">
+
+  {% elif media_type == 'video' %}
+    {% set ext = path.split('.')[-1].lower() %}
+    {% set mime_map = {
+      'mp4': 'video/mp4',
+      'webm': 'video/webm',
+      'mkv': 'video/x-matroska',
+      'mov': 'video/quicktime',
+      'avi': 'video/x-msvideo',
+      'flv': 'video/x-flv',
+      'wmv': 'video/x-ms-wmv',
+      'mpeg': 'video/mpeg'
+    } %}
+    {% set mime = mime_map.get(ext, 'video/mp4') %}
+
+    <video controls autoplay>
+      <source src="{{ url_for('serve_media') }}?path={{ path }}" type="{{ mime }}">
+      Your browser does not support the video tag.
+    </video>
+
+    {% if metadata or video_stream %}
+      <div class="metadata">
+        <h4>Video Metadata</h4>
+        {% if video_stream %}
+          <p><strong>Codec:</strong> {{ video_stream.codec_name or 'N/A' }}</p>
+          <p><strong>Resolution:</strong> {{ video_stream.width or '?' }} × {{ video_stream.height or '?' }}</p>
+          <p><strong>Frame Rate:</strong> {{ video_stream.r_frame_rate or '?' }}</p>
+        {% endif %}
+        {% if metadata.format and metadata.format.duration %}
+          <p><strong>Duration:</strong> {{ metadata.format.duration | float | round(2) }} sec</p>
+        {% endif %}
+        {% if metadata.format and metadata.format.size %}
+          <p><strong>Size:</strong> {{ metadata.format.size | float / 1048576 | round(2) }} MB</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <br>
+  <a class="back-btn" href="{{ url_for('browse') }}?path={{ path.rsplit('/', 1)[0] }}">← Back to Folder</a>
+
+</body>
+</html>

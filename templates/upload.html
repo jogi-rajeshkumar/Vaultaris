@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload File - RK DATABASE SYSTEM</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(ellipse at center, #00040f 0%, #000c1f 100%);
+      color: #00fff7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px dashed rgba(0,255,255,0.06);
+      animation: rotate 10s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes rotate {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .datetime {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 0.85rem;
+      background: rgba(0, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(6px);
+      z-index: 2;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 2;
+    }
+
+    .back-link a {
+      background: rgba(0, 255, 255, 0.15);
+      padding: 8px 14px;
+      border-radius: 10px;
+      color: #00fff7;
+      text-decoration: none;
+      font-weight: bold;
+      border: 1px solid rgba(0, 255, 255, 0.25);
+    }
+
+    .upload-box {
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      width: 90%;
+      max-width: 600px;
+      word-break: break-word;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      text-align: center;
+      color: #00fff7;
+    }
+
+    .upload-path {
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 25px;
+      padding: 0 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      color: #00ffee;
+    }
+
+    #drop-area {
+      border: 2px dashed #00fff7;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      color: #00fff7;
+      background-color: rgba(0, 255, 255, 0.05);
+      margin-bottom: 20px;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      word-break: break-word;
+    }
+
+    #drop-area.highlight {
+      background-color: rgba(0, 255, 255, 0.15);
+    }
+
+    .drop-instruction {
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .upload-btn {
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      color: #00fff7;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .upload-btn:hover {
+      background: rgba(0, 255, 255, 0.35);
+    }
+
+    .progress {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      margin-top: 10px;
+      overflow: hidden;
+      height: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #00fff7;
+      width: 0;
+    }
+
+    @media screen and (max-width: 480px) {
+      .datetime, .back-link a {
+        top: 10px;
+        font-size: 0.75rem;
+        padding: 6px 10px;
+      }
+
+      .upload-box {
+        padding: 25px 20px;
+      }
+
+      h2 {
+        font-size: 1rem;
+        padding: 0 5px;
+      }
+
+      .upload-path {
+        font-size: 0.8rem;
+      }
+
+      .upload-btn {
+        width: 100%;
+        font-size: 15px;
+        padding: 12px;
+      }
+
+      #drop-area {
+        padding: 20px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="datetime" id="datetime">Loading...</div>
+  <div class="back-link"><a href="/browse?path={{ path }}">← Back</a></div>
+
+  <div class="upload-box">
+    <h2>Upload to:</h2>
+    <div class="upload-path" title="{{ path }}">{{ path }}</div>
+    <form id="upload-form" method="POST" enctype="multipart/form-data">
+      <div id="drop-area">
+        <p class="drop-instruction">Drag and drop files here or tap below</p>
+        <label class="upload-btn" for="fileElem">Select Files</label>
+        <input type="file" id="fileElem" name="file" multiple style="display:none" />
+        <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script>
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('fileElem');
+    const progressBar = document.getElementById('progress-bar');
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.add('highlight');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.remove('highlight');
+      });
+    });
+
+    dropArea.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', () => {
+      handleFiles(fileInput.files);
+    });
+
+    function handleFiles(files) {
+      [...files].forEach(uploadFile);
+    }
+
+    function uploadFile(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', location.pathname + location.search);
+
+      xhr.upload.addEventListener('progress', e => {
+        if (e.lengthComputable) {
+          const percent = (e.loaded / e.total) * 100;
+          progressBar.style.width = percent + '%';
+        }
+      });
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          Toastify({
+            text: `Uploaded ${file.name}`,
+            duration: 3000,
+            gravity: "bottom",
+            position: "center",
+            style: { background: "#00fff7", color: "#000" }
+          }).showToast();
+          progressBar.style.width = '0';
+          window.location.href = xhr.responseURL;
+        }
+      };
+
+      xhr.send(formData);
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString();
+      document.getElementById('datetime').textContent = `${dateStr} ${timeStr}`;
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+</body>
+</html>

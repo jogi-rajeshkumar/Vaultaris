@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse - Vaultaris</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(ellipse at center, #00040f 0%, #000c1f 100%);
+      color: #00ffe5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px dashed rgba(0,255,255,0.06);
+      animation: rotate 10s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes rotate {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .navbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      z-index: 2;
+      position: sticky;
+      top: 0;
+    }
+
+    .navbar h1 {
+      font-size: 1.5rem;
+      color: #00fff7;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: #00fff7;
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .navbar a:hover {
+      background: rgba(0, 255, 255, 0.4);
+    }
+
+    .datetime {
+      font-size: 0.9rem;
+      background: rgba(0, 255, 255, 0.08);
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(6px);
+      color: #00ffff;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      margin: 3rem auto;
+      padding: 0 20px;
+      z-index: 2;
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .card {
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+      padding: 2rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .card h2 {
+      color: #00fff7;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.4rem;
+    }
+
+    .file-entry {
+      background: rgba(0, 255, 255, 0.03);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .file-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .file-actions button,
+    .file-actions a button {
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      color: #00fff7;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .file-actions button:hover,
+    .file-actions a button:hover {
+      background: rgba(0, 255, 255, 0.35);
+    }
+
+    .breadcrumbs,
+    .search-bar,
+    .back-button,
+    .utility-buttons {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .breadcrumbs a,
+    .back-button a {
+      color: #00eaff;
+      text-decoration: none;
+      padding: 0 5px;
+    }
+
+    .breadcrumbs a:hover,
+    .back-button a:hover {
+      color: #00fff7;
+    }
+
+    .search-bar input,
+    .utility-buttons input[type="text"] {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      color: #00fff7;
+      width: 70%;
+      margin-bottom: 10px;
+    }
+
+    .search-bar button,
+    .utility-buttons button {
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: #00fff7;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .search-bar button:hover,
+    .utility-buttons button:hover {
+      background: rgba(0, 255, 255, 0.4);
+    }
+
+    @media screen and (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .navbar .nav-links {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+      }
+
+      .navbar a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .file-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .file-actions button,
+      .file-actions a button,
+      .utility-buttons button,
+      .search-bar button {
+        width: 100%;
+      }
+
+      .search-bar input,
+      .utility-buttons input[type="text"] {
+        width: 100%;
+      }
+
+      .card {
+        padding: 1rem;
+        margin: 0 1rem;
+      }
+
+      .card h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>Vaultaris</h1>
+    <div class="datetime" id="datetime">Loading...</div>
+    <div class="nav-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/logs">Logs</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Browsing: {{ path }}</h2>
+
+      <div class="breadcrumbs">
+        {% set parts = path.strip('/').split('/') %}
+        <a href="/browse?path=/">/</a>
+        {% set current = '/' %}
+        {% for part in parts %}
+          {% if part %}
+            {% set current = current + part + '/' %}
+            /<a href="/browse?path={{ current.strip('/') }}">{{ part }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="back-button">
+        <a href="/browse?path={{ path.rsplit('/', 1)[0] if '/' in path.strip('/') else '/mnt' }}">← Back</a>
+      </div>
+
+      <form method="get" action="/browse" class="search-bar">
+        <input type="hidden" name="path" value="{{ path }}">
+        <input type="text" name="q" placeholder="Search files or folders...">
+        <button type="submit">Search</button>
+      </form>
+
+      {% for name, encoded_path, is_dir, size, mtime in entries %}
+      <div class="file-entry">
+        <div><strong>{{ name }}</strong> {% if is_dir %}[DIR]{% else %} ({{ size }} bytes){% endif %} - {{ mtime }}</div>
+        <div class="file-actions">
+          {% if is_dir %}
+            <a href="/browse?path={{ encoded_path }}"><button>Open</button></a>
+            <a href="/download?path={{ encoded_path }}"><button>Download</button></a>
+          {% else %}
+            {% set ext = name.split('.')[-1].lower() %}
+            {% set previewable_exts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp', 'svg', 'mp4', 'webm', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'mpeg'] %}
+            {% if ext in previewable_exts %}
+              <a href="/preview?path={{ encoded_path }}" target="_blank"><button>Preview</button></a>
+            {% endif %}
+            <a href="/download?path={{ encoded_path }}"><button>Download</button></a>
+            <form method="POST" action="/delete" style="display:inline;">
+              <input type="hidden" name="path" value="{{ encoded_path }}">
+              <button type="submit" onclick="showToast('File deleted')">Delete</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="utility-buttons">
+        <a href="/upload?path={{ path }}"><button onclick="showToast('Upload started')">Upload File</button></a>
+        <form method="POST" action="/create_folder" onsubmit="showToast('Folder created')">
+          <input type="hidden" name="base_path" value="{{ path }}">
+          <input type="text" name="folder_name" placeholder="New folder name" required>
+          <button type="submit">Create Folder</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script>
+    function updateDateTime() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString();
+      document.getElementById('datetime').textContent = `${dateStr} ${timeStr}`;
+    }
+
+    function showToast(msg) {
+      Toastify({
+        text: msg,
+        duration: 3000,
+        gravity: "bottom",
+        position: "center",
+        style: { background: "#00fff7", color: "#000" }
+      }).showToast();
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+</body>
+</html>

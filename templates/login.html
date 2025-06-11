@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vaultaris Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(ellipse at center, #00040f 0%, #000c1f 100%);
+      color: #00ffe5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: rgba(0, 255, 255, 0.05);
+      padding: 40px 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+      width: 100%;
+      max-width: 360px;
+      position: relative;
+      z-index: 2;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: #00fff7;
+    }
+
+    .brand-slogan {
+      font-size: 14px;
+      text-align: center;
+      color: #00ffee;
+      margin-top: -20px;
+      margin-bottom: 20px;
+    }
+
+    .input-field {
+      margin-bottom: 20px;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #00fff7;
+      font-size: 15px;
+      outline: none;
+      box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      border-radius: 10px;
+      color: #00fff7;
+      font-size: 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .login-btn:hover {
+      background: rgba(0, 255, 255, 0.4);
+    }
+
+    .status {
+      margin-top: 10px;
+      text-align: center;
+      color: #ff4f4f;
+    }
+
+    .time-display {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 14px;
+      color: #00ffff;
+      z-index: 5;
+      background: rgba(0, 255, 255, 0.08);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px dashed rgba(0,255,255,0.06);
+      animation: rotate 10s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes rotate {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .login-container {
+        padding: 30px 20px;
+      }
+
+      .input-field input,
+      .login-btn {
+        padding: 14px;
+        font-size: 16px;
+      }
+
+      .time-display {
+        top: 10px;
+        right: 10px;
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="time-display" id="datetime">Loading...</div>
+
+  <div class="login-container">
+    <h2>Welcome to Vaultaris</h2>
+    <div class="brand-slogan">Secure. Simple. Smart.</div>
+    <div class="input-field">
+      <input type="text" id="username" placeholder="Username">
+    </div>
+    <div class="input-field">
+      <input type="password" id="password" placeholder="Password">
+    </div>
+    <button class="login-btn" onclick="login()">Access Vault</button>
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <script>
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const status = document.getElementById('statusMsg');
+
+      if (!username || !password) {
+        status.textContent = "Please enter both fields.";
+        return;
+      }
+
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+      });
+
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        status.textContent = "Access denied. Invalid credentials.";
+      }
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString();
+      document.getElementById('datetime').textContent = `${dateStr} ${timeStr}`;
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+
+</body>
+</html>

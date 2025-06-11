@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vaultaris Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(ellipse at center, #00040f 0%, #000c1f 100%);
+      color: #00ffe5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px dashed rgba(0,255,255,0.06);
+      animation: rotate 10s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes rotate {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .navbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      z-index: 2;
+      position: sticky;
+      top: 0;
+    }
+
+    .navbar h1 {
+      font-size: 1.5rem;
+      color: #00fff7;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: #00fff7;
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .navbar a:hover {
+      background: rgba(0, 255, 255, 0.4);
+    }
+
+    .datetime {
+      font-size: 0.9rem;
+      background: rgba(0, 255, 255, 0.08);
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(6px);
+      color: #00ffff;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      margin: 3rem auto;
+      padding: 0 20px;
+      z-index: 2;
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .card {
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+      padding: 2rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .card h2 {
+      color: #00fff7;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.4rem;
+    }
+
+    .drive-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .drive-item {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: rgba(0, 255, 255, 0.03);
+      padding: 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .drive-item button {
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid #00fff7;
+      border-radius: 10px;
+      color: #00fff7;
+      font-size: 14px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .drive-item button:hover {
+      background: rgba(0, 255, 255, 0.4);
+    }
+
+    @media screen and (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .navbar h1,
+      .navbar .nav-links,
+      .datetime {
+        margin-bottom: 10px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .drive-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .drive-item button {
+        width: 100%;
+      }
+
+      .container, .card {
+        padding: 1rem;
+        margin: 0 1rem;
+      }
+
+      .navbar a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .card h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>Vaultaris</h1>
+    <div class="datetime" id="datetime">Loading...</div>
+    <div class="nav-links">
+      <a href="/logs">Logs</a>
+      <a href="/logout">Shutdown</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Detected Storage Units</h2>
+      <div class="drive-list">
+        {% for drive in drives %}
+        <div class="drive-item">
+          <div>
+            <strong>{{ drive.device }}</strong>
+            {% if drive.label %} - <span>{{ drive.label }}</span>{% endif %}
+            - {{ drive.size }} ({{ drive.fstype or 'N/A' }}) {% if drive.removable %} <em>[Removable]</em> {% endif %}
+          </div>
+          {% if not drive.mountpoint %}
+          <form method="POST" action="/mount" style="margin: 0;">
+            <input type="hidden" name="device" value="{{ drive.device }}">
+            <button type="submit">Mount</button>
+          </form>
+          {% else %}
+          <a href="/browse?path={{ drive.mountpoint }}">
+            <button>Browse</button>
+          </a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateDateTime() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString();
+      document.getElementById('datetime').textContent = `${dateStr} ${timeStr}`;
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+</body>
+</html>
